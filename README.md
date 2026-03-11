@@ -77,7 +77,6 @@ To run the tray app in the background:
 | `token.json`            | Saved authentication token (auto-generated)     |
 | `browser_data/`         | Persistent browser profile (auto-generated)     |
 | `gotmail.svg`           | Custom tray icon                                |
-|-------------------------|-------------------------------------------------|
 
 ## Token Expiration
 
