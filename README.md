@@ -69,14 +69,15 @@ To run the tray app in the background:
 
 ## Files
 
-| File | Description |
-|------|-------------|
-| `outlook_login.py` | Opens browser for Outlook login, captures token |
-| `outlook_tray.py` | Menu bar tray application |
-| `fetch_outlook_mail.py` | CLI script to fetch emails (standalone) |
-| `token.json` | Saved authentication token (auto-generated) |
-| `browser_data/` | Persistent browser profile (auto-generated) |
-| `gotmail.svg` | Custom tray icon |
+| File                    | Description                                     |
+|-------------------------|-------------------------------------------------|
+| `outlook_login.py`      | Opens browser for Outlook login, captures token |
+| `outlook_tray.py`       | Menu bar tray application                       |
+| `fetch_outlook_mail.py` | CLI script to fetch emails (standalone)         |
+| `token.json`            | Saved authentication token (auto-generated)     |
+| `browser_data/`         | Persistent browser profile (auto-generated)     |
+| `gotmail.svg`           | Custom tray icon                                |
+|-------------------------|-------------------------------------------------|
 
 ## Token Expiration
 
