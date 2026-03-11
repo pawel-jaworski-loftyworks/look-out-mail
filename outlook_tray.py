@@ -105,37 +105,51 @@ def fetch_conversations(token: str, anchor_mailbox: str, session_id: str, count:
 def create_mail_icon(unread_count: int = 0) -> QIcon:
     """Create a mail icon from SVG with optional unread badge."""
     from PySide6.QtSvg import QSvgRenderer
+    from PySide6.QtCore import QRectF
 
-    size = 22  # macOS menu bar icon size
+    size = 64  # Larger canvas for quality
     pixmap = QPixmap(size, size)
     pixmap.fill(Qt.transparent)
 
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.Antialiasing)
+    painter.setRenderHint(QPainter.SmoothPixmapTransform)
 
-    # Load and render SVG
+    # Load and render SVG maintaining aspect ratio, centered
     svg_path = Path(__file__).parent / "gotmail.svg"
     if svg_path.exists():
         renderer = QSvgRenderer(str(svg_path))
-        renderer.render(painter)
+        svg_size = renderer.defaultSize()
+
+        # Calculate scale to fit in square while maintaining aspect ratio
+        scale = min(size / svg_size.width(), size / svg_size.height())
+        render_width = svg_size.width() * scale
+        render_height = svg_size.height() * scale
+
+        # Center in the square
+        x = (size - render_width) / 2
+        y = (size - render_height) / 2
+
+        renderer.render(painter, QRectF(x, y, render_width, render_height))
     else:
         # Fallback: simple envelope if SVG not found
         painter.setPen(QColor(80, 80, 80))
         painter.setBrush(QColor(255, 255, 255))
-        painter.drawRect(2, 5, 18, 12)
-        painter.drawLine(2, 5, 11, 12)
-        painter.drawLine(20, 5, 11, 12)
+        painter.drawRect(4, 16, 56, 32)
+        painter.drawLine(4, 16, 32, 36)
+        painter.drawLine(60, 16, 32, 36)
 
     # Draw unread badge if needed
     if unread_count > 0:
+        badge_size = 20
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(255, 59, 48))  # iOS red
-        painter.drawEllipse(12, 0, 10, 10)
+        painter.drawEllipse(size - badge_size - 2, 2, badge_size, badge_size)
 
         painter.setPen(QColor(255, 255, 255))
-        painter.setFont(QFont("Arial", 7, QFont.Bold))
+        painter.setFont(QFont("Arial", 12, QFont.Bold))
         badge_text = str(unread_count) if unread_count < 10 else "9+"
-        painter.drawText(12, 0, 10, 10, Qt.AlignCenter, badge_text)
+        painter.drawText(size - badge_size - 2, 2, badge_size, badge_size, Qt.AlignCenter, badge_text)
 
     painter.end()
     return QIcon(pixmap)
