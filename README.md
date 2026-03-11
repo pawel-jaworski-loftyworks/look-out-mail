@@ -64,7 +64,7 @@ The mail icon will appear in your menu bar.
 To run the tray app in the background:
 
 ```bash
-./venv/bin/python outlook_tray.py &
+./venv/bin/python outlook_tray.py & disown
 ```
 
 ## Files
