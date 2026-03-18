@@ -41,6 +41,7 @@ def main():
     captured_token = None
     anchor_mailbox = ""
     session_id = ""
+    token_captured_time = None
 
     with sync_playwright() as p:
         # Use persistent context - saves cookies/session between runs
@@ -52,7 +53,7 @@ def main():
         page = context.pages[0] if context.pages else context.new_page()
 
         def handle_request(request):
-            nonlocal captured_token, anchor_mailbox, session_id
+            nonlocal captured_token, anchor_mailbox, session_id, token_captured_time
 
             # Look for OWA API requests that have Bearer token
             if "outlook" in request.url and "service.svc" in request.url:
@@ -63,11 +64,12 @@ def main():
                     captured_token = token
                     anchor_mailbox = headers.get("x-anchormailbox", "")
                     session_id = headers.get("x-owa-sessionid", "")
+                    token_captured_time = True
 
                     # Show token preview
                     print(f"Captured token: {token[:50]}...")
                     print(f"Anchor mailbox: {anchor_mailbox}")
-                    print("\nToken captured! You can close the browser now.")
+                    print("\nToken captured! Closing browser...")
 
         # Listen for requests
         page.on("request", handle_request)
@@ -76,14 +78,19 @@ def main():
         page.goto(OUTLOOK_URL)
 
         print("Waiting for token capture...")
-        print("(Close the browser window when done)\n")
+        print("(Browser will auto-close once token is captured)\n")
 
-        # Wait for all pages to be closed
-        try:
-            while context.pages:
-                context.pages[0].wait_for_event("close", timeout=0)
-        except:
-            pass
+        # Wait for token capture or browser close
+        import time
+        while context.pages:
+            if token_captured_time:
+                # Give a moment for any final requests, then close
+                time.sleep(1)
+                break
+            try:
+                context.pages[0].wait_for_event("close", timeout=500)
+            except:
+                pass
 
         context.close()
 
