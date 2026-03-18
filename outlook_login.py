@@ -67,7 +67,7 @@ def main():
                     token_captured_time = True
 
                     # Show token preview
-                    print(f"Captured token: {token[:50]}...")
+                    print(f"Captured token: {token[:3]}...{token[-3:]}")
                     print(f"Anchor mailbox: {anchor_mailbox}")
                     print("\nToken captured! Closing browser...")
 
@@ -96,7 +96,7 @@ def main():
 
     if captured_token:
         save_token(captured_token, anchor_mailbox, session_id)
-        print("\nSuccess! Run: ./venv/bin/python fetch_outlook_mail.py")
+        print("\nSuccess! Token captured")
     else:
         print("\nNo token captured. Make sure to navigate to your inbox.")
 
